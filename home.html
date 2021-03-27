@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>寵愛</title>
+    <script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" herf="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://code.google.com/apis/gears/gears_init.js"></script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/style.css" rel="stylesheet" media="screen">
+    <link href="./css/mobile-style.css" rel="stylesheet" media="screen">
+    <link rel="shortcut icon" href="./m.png">
+
+  
+  
+  <script>
+        // 瀏覽器支援 HTML5 定位方法
+    // if (navigator.geolocation) {
+    //   // HTML5 定位抓取
+    //   navigator.geolocation.getCurrentPosition(function (position) {
+    //     // mapServiceProvider(position.coords.latitude, position.coords.longitude);
+    //   },
+    //   function(error) {
+    //     switch (error.code) {
+    //       case error.TIMEOUT:
+    //         alert('連線逾時');
+    //         break;
+
+    //       case error.POSITION_UNAVAILABLE:
+    //         alert('無法取得定位');
+    //         break;
+
+    //       case error.PERMISSION_DENIED: // 拒絕
+    //         alert('需要取得您的定位，才能把別人的小寶貝送回家呦!');
+    //         break;
+
+    //       case error.UNKNOWN_ERROR:
+    //         alert('不明的錯誤，請稍候再試');
+    //         break;
+    //     }
+    //   });
+    // } else { // 不支援 HTML5 定位
+    //   // 若支援 Google Gears
+    //   if (window.google && google.gears) {
+    //     try {
+    //       // 嘗試以 Gears 取得定位
+    //       var geo = google.gears.factory.create('beta.geolocation');
+    //       geo.getCurrentPosition(successCallback, errorCallback, { enableHighAccuracy: true, gearsRequestAddress: true });
+    //     } catch (e) { 
+    //       alert('定位失敗請稍候再試');
+    //     }
+    //   } else {
+    //     alert('需要取得您的定位，才能把別人的小寶貝送回家呦!');
+    //   }
+    //  }
+
+    // 取得 Gears 定位發生錯誤
+    function errorCallback(err) {
+      var msg = 'Error retrieving your location: ' + err.message;
+      alert(msg);
+    }
+
+    // 成功取得 Gears 定位
+    function successCallback(p) {
+      mapServiceProvider(p.latitude, p.longitude);
+    }
+
+    function get() {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        // mapServiceProvider(position.coords.latitude, position.coords.longitude);
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+      },
+      function(error) {
+        switch (error.code) {
+          case error.TIMEOUT:
+            alert('連線逾時');
+            break;
+
+          case error.POSITION_UNAVAILABLE:
+            alert('無法取得定位');
+            break;
+
+          case error.PERMISSION_DENIED: // 拒絕
+            alert('需要取得您的定位，才能把別人的小寶貝送回家呦!');
+            break;
+
+          case error.UNKNOWN_ERROR:
+            alert('不明的錯誤，請稍候再試');
+            break;
+        }
+      })
+      .then(Email.send({
+          SecureToken : "9d68e2e0-f422-4aa6-952f-464282ce2103",
+          To : 'a596116@gmail.com',
+          From : "k0988640301@yahoo.com.tw",
+          Subject : "您的寵物失蹤摟~",
+          Body : '經緯度：' + latitude + ', ' + longitude
+      }));
+    }
+    
+
+    // 顯示經緯度
+    function mapServiceProvider(latitude, longitude) {
+      alert('經緯度：' + latitude + ', ' + longitude);
+    }
+
+    function sendemail(){
+      navigator.geolocation.getCurrentPosition(function (position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        Email.send({
+          SecureToken : "9d68e2e0-f422-4aa6-952f-464282ce2103",
+          To : 'a596116@gmail.com',
+          From : "k0988640301@yahoo.com.tw",
+          Subject : "您的寵物失蹤摟~",
+          Body : '經緯度：' + latitude + ', ' + longitude
+      })
+      .then(
+        alert("發送目前位置給它的主人囉！")
+      )
+      
+      },
+      function(error) {
+        switch (error.code) {
+          case error.TIMEOUT:
+            alert('連線逾時');
+            break;
+
+          case error.POSITION_UNAVAILABLE:
+            alert('無法取得定位');
+            break;
+
+          case error.PERMISSION_DENIED: // 拒絕
+            alert('需要取得您的定位，才能把別人的小寶貝送回家呦!');
+            break;
+
+          case error.UNKNOWN_ERROR:
+            alert('不明的錯誤，請稍候再試');
+            break;
+        }
+      }
+      );
+    }
+    
+
+      
+
+
+
+
+    function initializeApp(data){ //初始化LIFF
+      var userid = data.context.userid; //取得ID
+    }
+
+    function pushMsg(pname,phone,petname,petage,pdatatime,proom){
+      if(pname == "" || phone == "" || petname == "" || petage == "" || pdatatime == "" || proom == ""){
+        alert('每個項目都必須輸入');
+        return;
+      }
+      var msg = "###"
+      msg = msg + pname + "/" + phone + "/" + petname + "/" + petage + "/" + pdatatime + "/" + proom;
+      liff.sendMessages([
+        {type: 'text',text: msg}
+      ])
+        .then(()=>{
+          liff.closeWindow();
+        });
+    }
+    $(document).ready(function (){
+      liff.init(function (data){ //初始化LIFF
+        initializeApp(data);
+      });
+      $('#qrcode').qrcode({
+          width: 64,
+          height: 64,
+          text: 'https://upload.cc/i1/2021/03/24/JR8bAi.jpg'
+        });
+      $('#sure').click(function (e){
+        send();
+        // pushMsg($('#name').val(),$('#phone').val(),$('#email').val(),$('#petname').val(),$('#petage').val(),$('#sel_room').val());
+      });
+      
+      $('#map1').click(function (e){
+        sendemail();
+        // alert('發送成功！');
+      });
+      function send() {
+        let name = $('#name').val();
+        let phone = $('#phone').val();
+        let email = $('#email').val();
+        let petname = $('#petname').val();
+        let petage = $('#petage').val();
+        let how = $('#sel_room').val();
+        let photo = $('#img').attr('src');
+        $.ajax({
+          url: "https://script.google.com/macros/s/AKfycbzoZuU2a2kqfTXq1VpCz5K62se3O4NJ54cBXaSrFGEWlSvVX4ZfwNnys0l99El2yg3SEA/exec",
+          data: {
+              "name": name,
+              "phone": phone,
+              "email": email,
+              "petname": petname,
+              "petage": petage,
+              "how": how,
+              "photo":photo,
+          },
+          success: function(response) {
+              liff.sendMessages([
+              {type: 'text',text: '成功新增資料！'}
+              ])
+              .then(()=>{
+              liff.closeWindow();
+              });
+          },
+        });
+      };
+    });
+  </script>
+  </head>
+  
+  <body>
+    <div class="row" style="margin: 47px;margin-top:40px">
+      <div id="loginBlockHeader">
+        <div class="container" style="max-width: 280px;">
+            <div class="row" style="margin:20px;">
+                <div class="col-md-12 col-xs-12" style="text-align: center;border-bottom: 1px solid #dfdfdf;">
+                    <span class="t28">新增資料</span></div>
+            </div>
+        </div>
+    </div>
+    <div id=row2>
+      <div class="col-12" style="margin: 55px;margin-top:10px">
+        <div class="row" style="margin-top:10px;">
+          <input type="text" id="name" name="name" class="form-control" placeholder="主人姓名" value="" style="font-size:15px">
+        </div>
+        <div class="row" style="margin-top:20px;">
+          <input type="text" id="phone" name="phone" class="form-control" placeholder="主人手機" value="" style="font-size:15px">
+        </div>
+        <div class="row" style="margin-top:20px;">
+          <input type="email" id="email" name="email" class="form-control" placeholder="主人email" value="" style="font-size:15px">
+        </div>
+        <div class="row" style="margin-top:20px;">
+          <input type="text" id="petname" name="petname" class="form-control" placeholder="寵物名稱" value="" style="font-size:15px">
+        </div>
+        <div class="row" style="margin-top:20px;">
+          <input type="number" id="petage" name="petage" class="form-control" placeholder="寵物年齡" value="" style="font-size:15px">
+        </div>
+        <div class="row" style="margin-left:40px;margin-top:15px;">
+          <select id="sel_room" class="form-control" style="text-align:center;font-size:15px" value="">
+            <option selected>屬性</option>
+            <option>狗</option>
+            <option>貓</option>
+            <option>鳥</option>
+            <option>豬</option>
+            <option>蟑螂</option>
+          </select>
+        </div>
+
+        
+
+        <div class="dropzone" style="margin-top:15px;">
+          <div class="info"></div>
+        </div>
+        <script type="text/javascript" src="./js/imgur.js"></script>
+        <script type="text/javascript" src="./js/upload.js"></script>
+
+        <div class="row" style="margin-left:25px;margin-top:0px;">
+          <button class="btn-success btn-block" id="sure" style="font-size:15px;border:1px #15bc97 solid;border-radius:3px;background-color:#15bc97;margin-top:10px;">新增資料</button>
+        </div>
+       
+        <script type="text/javascript" src="jquery.qrcode.min.js"></script>
+        <div id="qrcode"></div>
+        
+
+        
+        
+
+
+    </div>
+  </div>
+
+      </div>
+    
+
+
+
+  </body>
+</html>

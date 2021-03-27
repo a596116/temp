@@ -1,0 +1,220 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>寵愛</title>
+    <script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" herf="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://code.google.com/apis/gears/gears_init.js"></script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+
+  
+  
+  <script>
+        // 瀏覽器支援 HTML5 定位方法
+    // if (navigator.geolocation) {
+    //   // HTML5 定位抓取
+    //   navigator.geolocation.getCurrentPosition(function (position) {
+    //     // mapServiceProvider(position.coords.latitude, position.coords.longitude);
+    //   },
+    //   function(error) {
+    //     switch (error.code) {
+    //       case error.TIMEOUT:
+    //         alert('連線逾時');
+    //         break;
+
+    //       case error.POSITION_UNAVAILABLE:
+    //         alert('無法取得定位');
+    //         break;
+
+    //       case error.PERMISSION_DENIED: // 拒絕
+    //         alert('需要取得您的定位，才能把別人的小寶貝送回家呦!');
+    //         break;
+
+    //       case error.UNKNOWN_ERROR:
+    //         alert('不明的錯誤，請稍候再試');
+    //         break;
+    //     }
+    //   });
+    // } else { // 不支援 HTML5 定位
+    //   // 若支援 Google Gears
+    //   if (window.google && google.gears) {
+    //     try {
+    //       // 嘗試以 Gears 取得定位
+    //       var geo = google.gears.factory.create('beta.geolocation');
+    //       geo.getCurrentPosition(successCallback, errorCallback, { enableHighAccuracy: true, gearsRequestAddress: true });
+    //     } catch (e) { 
+    //       alert('定位失敗請稍候再試');
+    //     }
+    //   } else {
+    //     alert('需要取得您的定位，才能把別人的小寶貝送回家呦!');
+    //   }
+    //  }
+
+    // 取得 Gears 定位發生錯誤
+    function errorCallback(err) {
+      var msg = 'Error retrieving your location: ' + err.message;
+      alert(msg);
+    }
+
+    // 成功取得 Gears 定位
+    function successCallback(p) {
+      mapServiceProvider(p.latitude, p.longitude);
+    }
+
+    function get() {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        // mapServiceProvider(position.coords.latitude, position.coords.longitude);
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+      },
+      function(error) {
+        switch (error.code) {
+          case error.TIMEOUT:
+            alert('連線逾時');
+            break;
+
+          case error.POSITION_UNAVAILABLE:
+            alert('無法取得定位');
+            break;
+
+          case error.PERMISSION_DENIED: // 拒絕
+            alert('需要取得您的定位，才能把別人的小寶貝送回家呦!');
+            break;
+
+          case error.UNKNOWN_ERROR:
+            alert('不明的錯誤，請稍候再試');
+            break;
+        }
+      })
+      .then(Email.send({
+          SecureToken : "9d68e2e0-f422-4aa6-952f-464282ce2103",
+          To : 'a596116@gmail.com',
+          From : "k0988640301@yahoo.com.tw",
+          Subject : "您的寵物失蹤摟~",
+          Body : '經緯度：' + latitude + ', ' + longitude
+      }));
+    }
+    
+
+    // 顯示經緯度
+    function mapServiceProvider(latitude, longitude) {
+      alert('經緯度：' + latitude + ', ' + longitude);
+    }
+
+    function sendemail(){
+      navigator.geolocation.getCurrentPosition(function (position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        Email.send({
+          SecureToken : "9d68e2e0-f422-4aa6-952f-464282ce2103",
+          To : 'a596116@gmail.com',
+          From : "k0988640301@yahoo.com.tw",
+          Subject : "您的寵物失蹤摟~",
+          Body : '經緯度：' + latitude + ', ' + longitude
+      })
+      .then(
+        alert("發送目前位置給它的主人囉！")
+      )
+      
+      },
+      function(error) {
+        switch (error.code) {
+          case error.TIMEOUT:
+            alert('連線逾時');
+            break;
+
+          case error.POSITION_UNAVAILABLE:
+            alert('無法取得定位');
+            break;
+
+          case error.PERMISSION_DENIED: // 拒絕
+            alert('需要取得您的定位，才能把別人的小寶貝送回家呦!');
+            break;
+
+          case error.UNKNOWN_ERROR:
+            alert('不明的錯誤，請稍候再試');
+            break;
+        }
+      }
+      );
+      
+      
+    }
+    
+
+
+
+
+
+    function initializeApp(data){ //初始化LIFF
+      var userid = data.context.userid; //取得ID
+    }
+
+    function pushMsg(pname,phone,petname,petage,pdatatime,proom){
+      if(pname == "" || phone == "" || petname == "" || petage == "" || pdatatime == "" || proom == ""){
+        alert('每個項目都必須輸入');
+        return;
+      }
+      var msg = "###"
+      msg = msg + pname + "/" + phone + "/" + petname + "/" + petage + "/" + pdatatime + "/" + proom;
+      liff.sendMessages([
+        {type: 'text',text: msg}
+      ])
+        .then(()=>{
+          liff.closeWindow();
+        });
+    }
+    $(document).ready(function (){
+      liff.init(function (data){ //初始化LIFF
+        initializeApp(data);
+      });
+      $('#sure').click(function (e){
+        pushMsg($('#name').val(),$('#phone').val(),$('#petname').val(),$('#petage').val(),$('#datetime').val(),$('#sel_room').val());
+      });
+      
+      $('#map1').click(function (e){
+        sendemail();
+        // alert('發送成功！');
+      });
+    });
+  </script>
+  </head>
+  
+  <body>
+    <div class="row" style="margin: 50px">
+      <div class="col-12" style="margin: 50px">
+        <label>主人姓名</label>
+        <input type="text" id="name" class="form-control" style="font-size:25px"/>
+        <br />
+        <label>主人手機</label>
+        <input type="number" id="phone" class="form-control" style="font-size:25px"/>
+        <br />
+        <label>寵物名稱</label>
+        <input type="text" id="petname" class="form-control" style="font-size:25px"/>
+        <br />
+        <label>寵物年齡</label>
+        <input type="number" id="petage" class="form-control" style="font-size:25px"/>
+        <br />
+        <label>日期</label>
+        <input type="date" id="datetime" value="" class="form-control" style="font-size:22px"/>
+        
+        <label>屬性</label>
+        <select id="sel_room" class="form-control" style="font-size:23px">
+          <option selected>狗</option>
+          <option>貓</option>
+          <option>鳥</option>
+          <option>豬</option>
+          <option>蟑螂</option>
+        </select>
+        <br />
+        
+        <button class="btn-success btn-block" id="sure" style="font-size:24px">新增資料</button>
+        <br />
+        <input type="button" value="發送目前位置給它的主人" onclick="this.disabled=true" id="map1" style="font-size:25px"/>
+      </div>
+    </div>
+  </body>
+</html>
